@@ -1,0 +1,100 @@
+# End-to-end check of the zoned-display pipeline, across both displays
+# (SSD1306 OLED over I2C, ILI9341 color TFT over SPI):
+#   btn1 pulses -> PCNT -> gateway.rpm  -> bindings -> arc dial + linear bar (OLED)
+#                                                      + arc dial (TFT)
+#   btn2 pulses -> PCNT -> gateway.speed -> bindings -> text zones (OLED + TFT)
+#
+# Reading changes are logged change-only, so after matching the initial
+# "0"-value lines, the next occurrence of each entity's log line is
+# necessarily a non-zero value produced by the button presses below.
+# Zone rendering itself is visual — verify in the Wokwi UI / VS Code
+# extension; serial assertions prove sensor -> entity -> binding delivery.
+name: RPM + speed zoned display pipeline
+version: 1
+author: BoardCOM
+steps:
+  - wait-serial: "boardcom gateway online"
+  - wait-serial: "gateway.rpm = 0 rpm"
+  - wait-serial: "gateway.speed = 0.0 km/h"
+  # 5 pulses on the RPM input (GPIO4)
+  - set-control:
+      part-id: btn1
+      control: pressed
+      value: 1
+  - delay: 60ms
+  - set-control:
+      part-id: btn1
+      control: pressed
+      value: 0
+  - delay: 60ms
+  - set-control:
+      part-id: btn1
+      control: pressed
+      value: 1
+  - delay: 60ms
+  - set-control:
+      part-id: btn1
+      control: pressed
+      value: 0
+  - delay: 60ms
+  - set-control:
+      part-id: btn1
+      control: pressed
+      value: 1
+  - delay: 60ms
+  - set-control:
+      part-id: btn1
+      control: pressed
+      value: 0
+  - delay: 60ms
+  - set-control:
+      part-id: btn1
+      control: pressed
+      value: 1
+  - delay: 60ms
+  - set-control:
+      part-id: btn1
+      control: pressed
+      value: 0
+  - delay: 60ms
+  - set-control:
+      part-id: btn1
+      control: pressed
+      value: 1
+  - delay: 60ms
+  - set-control:
+      part-id: btn1
+      control: pressed
+      value: 0
+  - wait-serial: "gateway.rpm ="
+  # 3 pulses on the speed input (GPIO5)
+  - set-control:
+      part-id: btn2
+      control: pressed
+      value: 1
+  - delay: 60ms
+  - set-control:
+      part-id: btn2
+      control: pressed
+      value: 0
+  - delay: 60ms
+  - set-control:
+      part-id: btn2
+      control: pressed
+      value: 1
+  - delay: 60ms
+  - set-control:
+      part-id: btn2
+      control: pressed
+      value: 0
+  - delay: 60ms
+  - set-control:
+      part-id: btn2
+      control: pressed
+      value: 1
+  - delay: 60ms
+  - set-control:
+      part-id: btn2
+      control: pressed
+      value: 0
+  - wait-serial: "gateway.speed ="

@@ -1,0 +1,51 @@
+[package]
+name = "firmware"
+version = "0.1.0"
+authors = ["MindCollaps <ntill@gmx.de>"]
+edition = "2021"
+resolver = "2"
+rust-version = "1.82"
+
+[[bin]]
+name = "firmware"
+test = false
+doc = false
+harness = false # do not use the built-in cargo test harness -> resolve rust-analyzer errors
+
+[profile.release]
+opt-level = "s"
+
+[profile.dev]
+debug = true    # Symbols are nice, and they don't increase the size on Flash
+opt-level = "z"
+
+[patch.crates-io]
+esp-idf-sys = { git = "https://github.com/esp-rs/esp-idf-sys.git" }
+esp-idf-hal = { git = "https://github.com/esp-rs/esp-idf-hal.git" }
+esp-idf-svc = { git = "https://github.com/esp-rs/esp-idf-svc.git" }
+
+# Target-independent deps only: the entities/config/automations layers must
+# compile for the host so config parsing and binding logic stay unit-testable
+# without hardware or a simulator (cargo test --target x86_64-unknown-linux-gnu).
+[dependencies]
+log = "0.4"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+# Pure Rust, no hardware dependency: the widget/compositor layer
+# (src/drivers/display/) draws onto any DrawTarget and is host-testable via
+# embedded-graphics's own MockDisplay, so it belongs here, not in the
+# espidf-only section below.
+embedded-graphics = "0.8"
+
+# Hardware-facing deps: only when building for the ESP32 (target_os = "espidf").
+[target.'cfg(target_os = "espidf")'.dependencies]
+esp-idf-svc = "0.52.1"
+ssd1306 = "0.10"
+mipidsi = "0.10"
+
+[build-dependencies]
+# The espidf feature must be explicit: on the ESP32 build it would be enabled
+# transitively via esp-idf-sys anyway, but host (unit test) builds don't have
+# esp-idf-sys in the graph at all.
+embuild = { version = "0.33", features = ["espidf"] }

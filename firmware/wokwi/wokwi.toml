@@ -1,0 +1,8 @@
+# Wokwi simulation config. Run from the firmware/ directory:
+#   cargo build --release
+#   wokwi-cli wokwi                       # interactive-ish run (needs WOKWI_CLI_TOKEN)
+#   wokwi-cli wokwi --scenario scenario.yaml --timeout 30000
+[wokwi]
+version = 1
+elf = "../target/xtensa-esp32-espidf/release/firmware"
+firmware = "../target/xtensa-esp32-espidf/release/firmware"

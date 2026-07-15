@@ -1,0 +1,90 @@
+{
+  "devices": [
+    {
+      "id": "gateway",
+      "name": "ESP32 Gateway",
+      "entities": [
+        {
+          "id": "rpm",
+          "type": "rpm",
+          "driver": "pulse_counter",
+          "driver_config": {
+            "pin": 4,
+            "pulses_per_revolution": 4,
+            "sample_window_ms": 400
+          }
+        },
+        {
+          "id": "speed",
+          "type": "speed",
+          "driver": "pulse_counter",
+          "driver_config": {
+            "pin": 5,
+            "pulses_per_revolution": 1,
+            "sample_window_ms": 400,
+            "meters_per_revolution": 1.9
+          }
+        },
+        {
+          "id": "display",
+          "type": "display_panel",
+          "driver": "ssd1306_display",
+          "driver_config": {
+            "i2c_sda": 21,
+            "i2c_scl": 22,
+            "layout": [
+              {
+                "id": "dial",
+                "x": 0, "y": 0, "width": 128, "height": 38,
+                "widget": { "kind": "gauge_arc", "min": 0, "max": 500, "redline": 400, "style": 1 }
+              },
+              {
+                "id": "bar",
+                "x": 0, "y": 40, "width": 128, "height": 10,
+                "widget": { "kind": "gauge_linear", "min": 0, "max": 500, "redline": 400 }
+              },
+              {
+                "id": "bottom",
+                "x": 0, "y": 52, "width": 128, "height": 12,
+                "widget": { "kind": "text", "template": "Speed: {{value}}", "font": "small", "align": "center" }
+              }
+            ]
+          }
+        },
+        {
+          "id": "tft",
+          "type": "display_panel",
+          "driver": "ili9341_display",
+          "driver_config": {
+            "spi_sck": 18,
+            "spi_mosi": 23,
+            "spi_cs": 15,
+            "spi_dc": 2,
+            "spi_rst": 16,
+            "rotation": 90,
+            "mirrored": true,
+            "layout": [
+              {
+                "id": "dial",
+                "x": 20, "y": 5, "width": 280, "height": 175,
+                "widget": { "kind": "gauge_arc", "min": 0, "max": 500, "redline": 400, "style": 1 }
+              },
+              {
+                "id": "info",
+                "x": 0, "y": 190, "width": 320, "height": 45,
+                "widget": { "kind": "text", "template": "Speed: {{value}} km/h", "font": "large", "align": "center" }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "bindings": [
+    { "source": "gateway.rpm", "target": "gateway.display.dial" },
+    { "source": "gateway.rpm", "target": "gateway.display.bar" },
+    { "source": "gateway.speed", "target": "gateway.display.bottom" },
+    { "source": "gateway.rpm", "target": "gateway.tft.dial" },
+    { "source": "gateway.speed", "target": "gateway.tft.info" }
+  ]
+}

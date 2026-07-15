@@ -1,0 +1,6 @@
+# Cargo.lock is committed on purpose: this is a binary crate and the
+# [patch.crates-io] git dependencies must stay pinned for reproducible builds.
+/.vscode
+/.embuild
+/target
+/target-host
